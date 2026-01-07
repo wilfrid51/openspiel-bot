@@ -23,8 +23,8 @@ DEFAULT_MAX_PARSING_RETRIES = 2
 PROMPT_RE = r"\r?\n>\s*$"
 MOVE_RE = re.compile(r"\b([a-h][1-8])\b", re.IGNORECASE)
 
-EDAX_BIN  = "/root/workspace/test/edax-reversi/bin/lEdax-x86-64-v3"
-EDAX_ROOT = "/root/workspace/test/edax-reversi"
+EDAX_BIN  = "edax-reversi/bin/lEdax-x86-64-v3"
+EDAX_ROOT = "edax-reversi"
 
 
 class ParsingError(Exception):
