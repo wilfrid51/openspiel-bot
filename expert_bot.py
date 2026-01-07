@@ -530,15 +530,16 @@ class GoofSpielExpertBot(pyspiel.Bot):
                 'players': ["mcts_bot", "mybot"]
             }
             # goofspiel_strategy = RandomStrategy(game_params={'length':num_cards})
+            goofspiel_strategy = CopyStrategy(game_params={})
             # goofspiel_strategy = CopyP1Strategy(game_params={'length':num_cards})
             # goofspiel_strategy = AntiPureStrategy(game_params=game_params)
             # goofspiel_strategy = MyStrategy(game_params=game_params)
-            if num_cards > 13:
-                goofspiel_strategy = CopyStrategy(game_params={})
-            elif num_cards > 15:
-                goofspiel_strategy = MyStrategy(game_params={'length':num_cards})
-            else:
-                goofspiel_strategy = RankMatchStrategy(game_params=game_params)
+            # if num_cards > 13:
+            #     goofspiel_strategy = CopyStrategy(game_params={})
+            # elif num_cards > 15:
+            #     goofspiel_strategy = MyStrategy(game_params={'length':num_cards})
+            # else:
+            #     goofspiel_strategy = RankMatchStrategy(game_params=game_params)
 
             goofspiel_strategy.start_game()
 
