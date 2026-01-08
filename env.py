@@ -14,6 +14,7 @@ import pyspiel
 
 from llm_bot import LLMBot
 from expert_bot import OthelloExpertBot, GoofSpielExpertBot
+from manual_bot import LiarsDiceManualBot
 from game_config import create_game
 from agents import GAME_AGENTS
 
@@ -136,6 +137,26 @@ class TimedMCTSBot(pyspiel.Bot):
             'mcts_call_count': self.mcts_call_count,
             'avg_mcts_time_per_step': self.total_mcts_time / self.mcts_call_count if self.mcts_call_count > 0 else 0.0
         }
+
+    def get_conversation(self):
+        """Get conversation history (for debugging)"""
+        return []
+    
+    def get_action_history(self):
+        """Get complete action history for all players"""
+        return []
+
+    def get_last_error(self):
+        """Get last error string (if any)"""
+        return ""
+
+    def get_total_usage(self):
+        """Get accumulated usage statistics"""
+        return {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+    
+    def get_observation(self):
+        """Get final observation string"""
+        return ""
 
 
 class Actor:
@@ -678,6 +699,15 @@ class Actor2:
                     seed=seed,
                     executor=self.executor,
                 )
+            elif game_name == "liars_dice":
+                llm_bot = LiarsDiceManualBot(
+                    game=game,
+                    player_id=llm_player_id,
+                    agent=agent,
+                    seed=seed,
+                    executor=self.executor,
+                )
+                # Note: Opponent bot will be created in the loop below (line ~734)
             else:
                 llm_bot = LLMBot(
                     game=game,
@@ -871,7 +901,7 @@ class Actor2:
             score = 0.5
         return float(score)
 
-    def _create_opponent_bot(self, opponent, player_id, seed, game, agent):
+    def _create_opponent_bot(self, opponent, player_id, seed, game, agent, mcts_config=None):
         """Create opponent bot based on type and game dynamics"""
         game_type = game.get_type()
         # For simultaneous move games, MCTS doesn't work - fallback to random
@@ -887,7 +917,8 @@ class Actor2:
             )
         elif opponent == "mcts":
             # Get MCTS config from agent
-            mcts_config = agent.get_mcts_config()
+            if mcts_config is None:
+                mcts_config = agent.get_mcts_config()
             
             # If agent returns None, game doesn't need MCTS (e.g., single-player)
             if mcts_config is None:
