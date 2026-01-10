@@ -2,7 +2,7 @@ import os
 import asyncio
 import json
 import random
-from env import Actor2 as act
+from env import Actor as act
 from typing import List, Dict, Any
 
 def preprocess(result):
@@ -19,24 +19,44 @@ def write_jsonl(path: str, rows: List[Dict[str, Any]]):
         for r in rows:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
-
 actor = act()
 
-cnt_per_task = 1000
+with open("merged.json", "r") as f:
+    data = json.load(f)
 
-for task_type in range(5):
-    succ, total = 0, cnt_per_task
-    for i in range(cnt_per_task):
-        task_id = random.randint(0, 20000000)
-        task_id = task_id * 5 + task_type
+data_per_game = {}
 
-        result = asyncio.run(actor.evaluate(task_id=task_id))
+# Sort items in `data` by the value of 'block_number' in the 'extra' field
+data.sort(key=lambda item: item['extra'].get('block_number', 0))
 
-        print(f"{result['task_name'].split(":")[1]}:{task_id}:{result['score']}")
+for item in data:
+    extra = item['extra']
+    game_name = extra['game_name']
+    task_id = extra['task_id']
+    seed = extra['seed']
+    if game_name not in data_per_game:
+        data_per_game[game_name] = []
+    data_per_game[game_name].append({
+        "task_id": task_id,
+        "seed": seed,
+    })
 
-        succ += result['score']
+# for game_name, data in data_per_game.items():
+#     print(f"{game_name}: {(data)}")
+#     for item in data:
+#         print(f"\t{item['task_id']}: {item['seed']}")
+#     print()
 
-        if result['score'] == 1.0:
-            write_jsonl(f"dataset/goofspiel_{8+task_type*2}.jsonl", [preprocess(result)])
+liars_dice = data_per_game['liars_dice']
+leduc_poker = data_per_game['leduc_poker']
+clobber = data_per_game['clobber']
+othello = data_per_game['othello']
+gin_rummy = data_per_game['gin_rummy']
+goofspiel = data_per_game['goofspiel']
+backgammon = data_per_game['backgammon']
 
-    print(f"{succ}/{total} = {succ/total*100}%")
+for item in othello:
+    task_id, seed = item['task_id'], item['seed']
+    print(f"{task_id}: {seed}")
+    result = asyncio.run(actor.evaluate(task_id=task_id, seed=seed))
+    print(result)
