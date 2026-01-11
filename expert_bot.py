@@ -23,8 +23,8 @@ DEFAULT_MAX_PARSING_RETRIES = 2
 PROMPT_RE = r"\r?\n>\s*$"
 MOVE_RE = re.compile(r"\b([a-h][1-8])\b", re.IGNORECASE)
 
-EDAX_BIN  = "edax-reversi/bin/lEdax-x86-64-v3"
-EDAX_ROOT = "edax-reversi"
+EDAX_BIN  = "/root/workspace/openspiel-bot/edax-reversi/bin/lEdax-x86-64-v3"
+EDAX_ROOT = "/root/workspace/openspiel-bot/edax-reversi"
 
 
 class ParsingError(Exception):
@@ -282,20 +282,21 @@ class OthelloExpertBot(pyspiel.Bot):
                 print(state.legal_actions(self._player_id))
             cnt = 0
             action_id = -1
+            legal_action = state.legal_actions(self._player_id)
+
             while cnt < len(top):
                 best = str(top[cnt][0])
                 action_id = (ord(best[0]) - ord('a')) + (ord(best[1]) - ord('1')) * 8
-                legal_action = state.legal_actions(self._player_id)
                 if self._verbose:
                     print(best, action_id)
                 cnt += 1
                 if action_id in legal_action:
                     break
 
-            if action_id == -1:
+            if action_id == -1 or action_id not in legal_action:
                 if self._verbose:
                     print("Nothing is selected by Expert bot!")
-                action_id = state.legal_actions(self._player_id)[0]
+                action_id = legal_action[0]
 
             if self._verbose:
                 print(display)
