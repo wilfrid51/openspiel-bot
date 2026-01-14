@@ -80,7 +80,7 @@ if __name__ == "__main__":
     # repo_ids = ["top-50000/goof_8", "top-50000/goof_10", "top-50000/goof_12", "top-50000/goof_14", "top-50000/goof_16"]    
     data_files = ["othello.jsonl"]
     repo_ids = ["top-50000/othello"]
-    token = "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"  # Place your HuggingFace User Access Token here if needed
+    token = ""  # Place your HuggingFace User Access Token here if needed
 
     for data_file, repo_id in zip(data_files, repo_ids):
         upload_single_dataset(data_file, repo_id, token)
