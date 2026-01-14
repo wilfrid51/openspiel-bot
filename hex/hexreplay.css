@@ -1,0 +1,665 @@
+/* ---------------------------------------------------------------------- */
+/* Page layout */
+
+html {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100%; 
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    background-color: #d0d0c0;
+}
+
+#board-panel {
+    flex: 1;
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    padding-top: 10px;
+    padding-left: 10px;
+    box-sizing: border-box;
+}
+
+#board-container {
+    display: flex;
+    height: 100%;
+    box-sizing: border-box;
+    flex-flow: column;
+    position: relative;
+}
+
+#button-panel {
+    flex: 0 0 30px;
+    display: flex;
+    flex-flow: row;
+    gap: 10px;
+    align-items: center;
+}
+
+#left-buttons {
+    flex: 1;
+    white-space: nowrap;
+}
+
+#mid-buttons {
+    display: flex;
+    flex-flow: row;
+    justify-content: right;
+    gap: 5px;
+}
+
+#main {
+    display: flex;
+    width: 100%;
+    flex-flow: row;
+}
+
+#movelist-panel {
+    height: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    display: flex;
+    flex-flow: column;
+}
+
+#movelist-controls {
+    flex: 0 0 30px;
+    margin-bottom: 10px;
+    text-align: center;
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    gap: 5px;
+}
+
+#movelist-container {
+    flex: 1;
+    overflow-y: scroll;
+    overflow-x: visible;
+    min-width: 155px;
+    background-color: #ffffff;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Board */
+
+.board {
+    position: relative;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+svg {
+    position: absolute;
+}
+
+.black-border {
+    fill: #000000;
+    stroke: #000000;
+    stroke-width: 4;
+}
+
+.white-border {
+    fill: #efe8e1;
+    stroke: #000000;
+    stroke-width: 4;
+}
+
+.coordlabel {
+    font-family: Helvetica,sans-serif;
+    font-weight: normal;
+    text-anchor: middle;
+    font-size: 30px;
+}
+
+.outline {
+    fill: #d9b479;
+    stroke: none;
+}
+
+.grid {
+    stroke: #000000;
+    stroke-width: 4;
+    fill: none;
+}
+
+/* Cells */
+
+.cell-bg {
+    fill: none;
+}
+
+.cell-bg.shaded {
+    fill: rgba(0,0,0,0.125);
+}
+
+.cell:hover .cell-bg {
+    fill: rgba(255,255,255,0.375);
+}
+
+.cell {
+    pointer-events: all;
+}
+
+/* Stones */
+
+.blackstone {
+    display: none;
+}
+
+.whitestone {
+    display: none;
+}
+
+.black .blackstone {
+    display: block;
+}
+
+.white .whitestone {
+    display: block;
+}
+
+.stone-black {
+    fill: url('#black-gradient');
+    filter: url("#shadow");
+}
+
+.stone-white {
+    fill: url('#white-gradient');
+    filter: url("#shadow");
+}
+
+/* Decorations on stones: move number, swap label, dot */
+
+.movelabel,.swaplabel {
+    display: none;
+    font-family: Helvetica,sans-serif;
+    font-weight: normal;
+    text-anchor: middle;
+    font-size: 30px;
+}
+
+.black .movelabel, .black .swaplabel {
+    fill: white;
+}
+
+.white .movelabel, .white .swaplabel {
+    fill: black;
+}
+
+.numbered .stone .movelabel {
+    display: block;
+}
+
+.numbered .swap .movelabel {
+    display: none;
+}
+
+.swaplabel {
+    display: none;
+}
+
+.numbered .stone.swap .swaplabel {
+    display: block;
+}
+
+.stone.last.swap .swaplabel {
+    display: block;
+}
+
+.dot {
+    display: none;
+}
+
+.stone.last .dot {
+    display: block;
+}
+
+/* We have to double up .dot to ensure this rule takes precedence over
+   the previous one, because of CSS's strange precedence rules. */
+.numbered .dot.dot {
+    display: none;
+}
+
+.swap .dot.dot {
+    display: none;
+}
+
+.black .dot {
+    fill: #c0c0c0;
+}
+
+.white .dot {
+    fill: #606060;
+}
+
+/* Cursors */
+
+.cursor-black {
+    cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAA70lEQVQokXWRTU7CYBCG52tJyp4auIJaOIJELmTiXfAnELhCE93ysxOPgbhjNx+DLV08LqBBSTvvbt5nJpN3BHdSb/eqmyIvct3YM92yLzgcTT9VS+nTosU9KWo6ISqBpv+c2RXyR23m5ldEOMH56czCf7YgNFiYjnFCTy+mz1vUSGT3klbagpBiQ9Hvu1qgj67lkMe1QMwhCxxO6ioUIfjZXtcCN5Jtg/D9sRZ4kPBN6Kq1Ky/o4I1bwelkbo2KoJamo2PUkV8tLrZ0WJr/OEWNI9Kx7lMGxMQMSNG9js7POiqxJ/0qsiLTtQ1Jyv4vlJACppANhI4AAAAASUVORK5CYII=") 8 8, auto;
+}
+
+.cursor-white {
+    cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAABC0lEQVQokXVRTU7CUBj8Xk2+RyS237sBi+4sLL2BK35O4wGUO/iT1MAd0DuIMYgX0ARxxwYsjxTTx7iwqGna+XaTmcmXGYL6OW4d3Zg5b3lr5v41N/c8QUE1ajIU28+mWGONZ/QzsTIIdS5o1ILHnv3Ef6zQtcE41FAEJcOe3aEIh46VWyjilim4/1LEcnRQPz87OfWoBJq+vCdF5uOl1A8AU5gZcZpUChLo1CNCWT4REe2I4NUXb5WCVzpceO5+5KoEI+fuiJtiV6UfLBFYPiYoGXStKymqbSWGIqhQB+NOIWWJtg0e8qqhQh3EsulnEyRIMMFFJhuJf8fK5478K/POKadm5l9ytOe/AdvvIDY9qEzPAAAAAElFTkSuQmCC") 8 8, auto;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Styles for red/blue display */
+
+.redblue .black-border {
+    fill: #ff0000;
+}
+
+.redblue .white-border {
+    fill: #0000ff;
+}
+
+.stone-red {
+    fill: url('#red-gradient');
+    filter: url("#shadow2");
+}
+
+.stone-blue {
+    fill: url('#blue-gradient');
+    filter: url("#shadow");
+}
+
+.redblue .white .movelabel, .redblue .white .swaplabel {
+    fill: white;
+}
+
+.redblue .black .dot {
+    fill: #e0e0e0;
+}
+
+.redblue .white .dot {
+    fill: #c0c0c0;
+}
+
+.redblue .cursor-black {
+    cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAkFBMVEXgwMD6+vr6+vr6+vr09PT09PTy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLgv7/gvr7gvb3////////////////////////////7+/v7+/v19fX19fX19fXz8/Pz8/Pz8/Pz8/Pz8/PgAwPgFxfgPz/gBATgGBjgsLDgQUHgExPgAADgQkLgFBTgFRXgPj4UYXWUAAAAI3RSTlP1+fj3mZjj9Z6c5OHim/b19fUBLi0IBywr+fiXlZafycj1xz38bosAAACYSURBVBjTXY/ZEoIwDEXjRkH2AkUWAbVAobT+/9/ZMgxWz1NyJsncAFYkZ6sorCrVNWCcNYj18zwxZBMtsjaWfIVGHVGiiV98YwgdDAmSfIeiHC6MG7Aarm9T9C4chCnEEUppCnoC62dl8qD6P5oi+u3Hxw2wHQ17MPBVUtKF28wITx0dEydgixALC/z1OUV+98rSrXNdfwBNQyC25NRQ/gAAAABJRU5ErkJggg==") 8 8, auto;
+}
+
+.redblue .cursor-white {
+    cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAkFBMVEW9vf/z8//z8//z8//z8//z8//6+v/6+v/6+v++vv/09P/09P/7+//7+/+/v//19f/19f/19f/AwP/////////////////////////////y8v/y8v/y8v/y8v/y8v/y8v/y8v/y8v/y8v8AAP8UFP8TE/9CQv9BQf8EBP8YGP8DA/8XF/8/P/8+Pv8VFf+wsP/eZpDFAAAAI3RSTlP1n8nI9cf5+Pf1mZj5+PWXlZb1AS4tCAcsK+P1npzk4eKb9tSNnu8AAACYSURBVBjTXY/ZEoIwDEWDqIiySYEiBVlaNovt//+dLcNg9TwlZ5LMDSBFci08rwhTXQNCmUXk0vejJCXWIjuAoCvctbESFrzoxhRUCBIi6A4nOdwkNZARPN+mWGo4M1MwB3xhCn6B4mdlbCD8P5oS/u3n4wNQ6U57sLhVSbEdbDNzfNLREa46OTA2yK5dn1Pk98b36yjX9QedDR27OAmzPAAAAABJRU5ErkJggg==") 8 8, auto;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Move list */
+
+.move {
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+    padding: 0px 10px;
+    font-family: monospace;
+    margin-left: 0px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.move:hover {
+    background-color: #f0f0f0;
+}
+
+.move.current {
+    background-color: #fea;
+}
+
+.move.current:hover {
+    background-color: #f0e0a0;
+}
+
+.move:active {
+    background-color: #d0d0d0;
+}
+
+.move .number {
+    display: inline-block;
+    margin-right: 1ex;
+    min-width: 3.5ex;
+}
+
+.move .player {
+    display: inline;
+    margin-right: 1.5ex;
+}
+
+.move .action {
+    display: inline;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Buttons and inputs */
+
+.button {
+    background-color: #f0f0f0;
+    background-repeat: no-repeat;
+    display: inline-block;
+    border: 0px;
+    padding: 0px;
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    vertical-align: middle;
+}
+
+.button:hover:not(:disabled) {
+    background-color: #ffffff;
+}
+
+.button:active:not(:disabled) {
+    background-color: #d0d0d0;
+}
+
+#button-swap-pieces {
+    background-image: url("images/buttons.svg");
+    background-position: -0px 0px;
+}
+
+#button-swap-pieces:disabled {
+    background-position: -0px -30px;
+}
+
+#button-swap-sides {
+    background-image: url("images/buttons.svg");
+    background-position: -300px 0px;
+}
+
+#button-swap-sides:disabled {
+    background-position: -300px -30px;
+}
+
+#button-pass {
+    background-image: url("images/buttons.svg");
+    background-position: -330px 0px;
+}
+
+#button-pass:disabled {
+    background-position: -330px -30px;
+}
+
+#button-resign-black {
+    background-image: url("images/buttons.svg");
+    background-position: -360px 0px;
+}
+
+#button-resign-black:disabled {
+    background-position: -360px -30px;
+}
+
+#button-resign-white {
+    background-image: url("images/buttons.svg");
+    background-position: -390px 0px;
+}
+
+#button-resign-white:disabled {
+    background-position: -390px -30px;
+}
+
+#button-resign {
+    background-image: url("images/buttons.svg");
+    background-position: -450px 0px;
+}
+
+#button-resign:disabled {
+    background-position: -450px -30px;
+}
+
+#button-numbered {
+    background-image: url("images/buttons.svg");
+    background-position: -240px 0px;
+}
+
+#button-numbered:disabled {
+    background-position: -240px -30px;
+}
+
+#button-numbered.checked {
+    background-color: #d0d0d0;
+}
+
+#button-numbered.checked:hover {
+    background-color: #dddddd;
+}
+
+#button-numbered.checked:active {
+    background-color: #d0d0d0;
+}
+
+#button-menu {
+    position: relative;
+    background-image: url("images/buttons.svg");
+    background-position: -270px 0px;
+}
+
+#button-menu:disabled {
+    background-position: -270px -30px;
+}
+
+#button-rotate-left {
+    background-image: url("images/buttons.svg");
+    background-position: -30px 0px;
+}
+
+#button-rotate-left:disabled {
+    background-position: -30px -30px;
+}
+
+#button-rotate-right {
+    background-image: url("images/buttons.svg");
+    background-position: -60px 0px;
+}
+
+#button-rotate-right:disabled {
+    background-position: -60px -30px;
+}
+
+#button-first {
+    background-image: url("images/buttons.svg");
+    background-position: -180px 0px;
+}
+
+#button-first:disabled {
+    background-position: -180px -30px;
+}
+
+#button-redo {
+    background-image: url("images/buttons.svg");
+    background-position: -150px 0px;
+}
+
+#button-redo:disabled {
+    background-position: -150px -30px;
+}
+
+#button-undo {
+    background-image: url("images/buttons.svg");
+    background-position: -120px 0px;
+}
+
+#button-undo:disabled {
+    background-position: -120px -30px;
+}
+
+#button-last {
+    background-image: url("images/buttons.svg");
+    background-position: -210px 0px;
+}
+
+#button-last:disabled {
+    background-position: -210px -30px;
+}
+
+#button-clear:disabled {
+    background-position: -420px -30px;
+}
+
+#button-resign {
+    background-image: url("images/buttons.svg");
+    background-position: -450px 0px;
+}
+
+#button-resign:disabled {
+    background-position: -450px -30px;
+}
+
+#input-size {
+    width: 5.5ex;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Menu */
+
+.menu {
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0px;
+    width: auto;
+    height: auto;
+    z-index: 1;
+    background-color: #f0f0f0;
+    font-family: Helvetica,sans-serif;
+    font-weight: normal;
+    white-space: nowrap;
+    cursor: default;
+}
+
+.menu-container.show .menu {
+    display: block;
+}
+
+.menu-item,.menu-header {
+    text-align: left;
+    margin: 3px;
+    padding: 3px;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+.menu-divider {
+    height: 5px;
+}
+
+.menu-container {
+    position: relative;
+}
+
+.menu-item:hover:not(.disabled) {
+    background-color: #ffffff;
+}
+
+.menu-item:active:not(.disabled) {
+    background-color: #d0d0d0;
+}
+
+.menu-item.disabled {
+    color: #c0c0c0;
+}
+
+.menu-item.indent {
+    padding-left: 20px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Styles for small screens */
+
+@media only screen and (max-width: 600px) and (orientation: portrait) { 
+    #board-panel {
+        padding-left: 0px;
+    }
+    
+    #button-panel {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    #main {
+        flex-flow: column;
+    }
+
+    #movelist-panel {
+        height: calc(100% - 100vw);
+        min-height: 30%;
+        align-items: center;
+        padding-top: 0px;
+    }
+
+    #movelist-controls .button {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    #movelist-container {
+        width: 200px;
+    }
+}
+
+@media only screen and (max-width: 400px) and (orientation: portrait) { 
+    #left-buttons {
+        font-size: 12px;
+    }
+
+    #left-buttons button {
+        font-size: 11px;
+    }
+    
+    input {
+        font-size: 11px;
+    }
+}
+
+@media only screen and (max-width: 319px) {
+    #input-size {
+        width: 2.5ex;
+    }
+}
+
+@media only screen and (max-width: 519px) and (orientation: landscape) {
+    #left-buttons {
+        font-size: 12px;
+    }
+
+    #left-buttons button {
+        font-size: 11px;
+    }
+
+    input {
+        font-size: 11px;
+    }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Styles for about.html */
+
+.about {
+    padding: 10px;
+    background-color: #e0e0d0;
+}
+
+.about pre {
+    margin-left: 20px;
+}
+.about p {
+    margin-left: 20px;
+}
+
+.about .codearea pre {
+    background-color: #fffff8;
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    margin-left: 0px;
+    max-height: 80px;
+    overflow-y: scroll;
+}
+
+.about .codearea {
+    margin-left: 40px;
+}

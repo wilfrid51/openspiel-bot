@@ -1,6 +1,5 @@
 from datasets import load_dataset, Dataset, Features, Value
 from huggingface_hub import HfApi
-from datasets import concatenate_datasets
 import json
 
 def load_jsonl_dataset(file_path):
@@ -31,18 +30,12 @@ def upload_to_hub(dataset, new_repo_id, token=None):
     print(f"Dataset uploaded to hub at: https://huggingface.co/datasets/{new_repo_id}")
 
 def process_extract_extra(ds):
-    # ds = ds.filter(lambda x: x["score"] > 0)
+    ds = ds.filter(lambda x: x["score"] > 0)
     print(f"Extracted {len(ds)} examples")
     # Get all original column names to remove them
     original_columns = ds.column_names
     # Map to extract only x["extra"] and remove all original columns
-    ds = ds.map(lambda x: x["extra"], remove_columns=original_columns)
-    try:
-        ds = ds.remove_columns(["task_metadata", "usage", "image", "request"])
-    except Exception as e:
-        print(f"e: {e}")
-    print(f"Extracted {len(ds)} examples")
-    return ds
+    return ds.map(lambda x: x["extra"], remove_columns=original_columns)
 
 def process_split_conversation(ds):
     new_data = []
@@ -82,25 +75,12 @@ def upload_single_dataset(data_file, new_repo_id, token):
 
     upload_to_hub(ds, new_repo_id, token=token)
 
-def upload_multiple_datasets_to_hub(data_files, repo_id, token):
-    datasets = []
-    for data_file in data_files:
-        ds = load_jsonl_dataset(data_file)
-        ds = process_extract_extra(ds)
-        datasets.append(ds)
-    concatenated_ds = concatenate_datasets(datasets)
-    print(f"Concatenated dataset: {len(concatenated_ds)} examples")
-    # print(f"Sample: {concatenated_ds[0]}")
-    upload_to_hub(concatenated_ds, repo_id, token=token)
-
 if __name__ == "__main__":
     # data_files=["dataset/goofspiel_8.jsonl", "dataset/goofspiel_10.jsonl", "dataset/goofspiel_12.jsonl", "dataset/goofspiel_14.jsonl", "dataset/goofspiel_16.jsonl"]
     # repo_ids = ["top-50000/goof_8", "top-50000/goof_10", "top-50000/goof_12", "top-50000/goof_14", "top-50000/goof_16"]    
-    data_files = ["new.jsonl"]
-    repo_ids = ["top-50000/othello_fit_114"]
+    data_files = ["othello.jsonl"]
+    repo_ids = ["top-50000/othello"]
     token = "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"  # Place your HuggingFace User Access Token here if needed
 
-    # for data_file, repo_id in zip(data_files, repo_ids):
-        # upload_single_dataset(data_file, repo_id, token)
-
-    upload_multiple_datasets_to_hub(data_files, repo_ids[0], token)
+    for data_file, repo_id in zip(data_files, repo_ids):
+        upload_single_dataset(data_file, repo_id, token)

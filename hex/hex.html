@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Interactive Hex Board</title>
+    <link rel="stylesheet" href="hexreplay.css">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body id="main">
+    <div id="board-panel">
+      <div id="button-panel">
+        <div id="left-buttons">
+          <button class="text-button" id="button-clear" type="button"
+                  title="Clear">New board</button>
+          Size: <input class="input" id="input-size" type="text"
+                       title="Board size" size="3">
+        </div>
+        <div id="mid-buttons">
+          <button class="button" id="button-rotate-left" type="button"
+                  title="Rotate left"></button>
+          <button class="button" id="button-rotate-right" type="button"
+                  title="Rotate right"></button>
+          <button class="button" id="button-numbered"
+                  title="Show move numbers"></button>
+          <div class="menu-container" id="menu-actions">
+            <button class="button menu-toggle" id="button-menu"
+                    title="More actions"></button>
+            <div class="menu" title="">
+              <div class="menu-item" id="item-swap">Swap</div>
+              <div class="menu-item" id="item-pass">Pass</div>
+              <div class="menu-item" id="item-resign">Resign</div>
+              <div class="menu-divider"></div>
+              <div class="menu-header">Colors:</div>
+              <div class="menu-item indent" id="item-bw">Black and white</div>
+              <div class="menu-item indent" id="item-rg">Red and blue</div>
+              <div class="menu-divider"></div>
+              <div class="menu-item" id="item-download">Download as SGF</div>
+              <div class="menu-item" id="item-lg">Import from Little Golem</div>
+              <div class="menu-divider"></div>
+              <div class="menu-item" id="item-about">About</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="board-container">
+      </div>
+    </div>
+    <div id="movelist-panel">
+      <div id="movelist-controls">
+        <button class="button" id="button-first" type="button"
+                title="First (home)"></button>
+        <button class="button" id="button-undo" type="button"
+                title="Previous (left)"></button>
+        <button class="button" id="button-redo" type="button"
+                title="Next (right)"></button>
+        <button class="button" id="button-last" type="button"
+                title="Last (end)"></button>
+      </div>
+      <div id="movelist-container">
+      </div>
+    </div>
+    <script src="hexreplay.js"></script>
+  </body>
+</html>

@@ -13,8 +13,8 @@ from open_spiel.python.algorithms import mcts
 import pyspiel
 
 from llm_bot import LLMBot
-from expert_bot import OthelloExpertBot, GoofSpielExpertBot
-from manual_bot import LiarsDiceManualBot
+from expert_bot import OthelloExpertBot, GoofSpielExpertBot, HexExpertBot
+from manual_bot import LiarsDiceManualBot, HexManualBot
 from game_config import create_game
 from agents import GAME_AGENTS
 
@@ -284,6 +284,21 @@ class Actor:
             #         executor=self.executor,
             #     )
                 # Note: Opponent bot will be created in the loop below (line ~734)
+            elif game_name == "hex":
+                # llm_bot = HexManualBot(
+                #     game=game,
+                #     player_id=llm_player_id,
+                #     agent=agent,
+                #     seed=seed,
+                #     executor=self.executor,
+                # )
+                llm_bot = HexExpertBot(
+                    game=game,
+                    player_id=llm_player_id,
+                    agent=agent,
+                    seed=seed,
+                    executor=self.executor,
+                )
             else:
                 llm_bot = LLMBot(
                     game=game,
