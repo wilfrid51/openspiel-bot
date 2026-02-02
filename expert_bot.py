@@ -1011,7 +1011,7 @@ class OthelloExpertBot(pyspiel.Bot):
                 action_id = legal_action[0]
 
             if self._verbose:
-                print(display)
+                print(display, flush=True)
 
             response = str(action_id)
 
@@ -1039,7 +1039,7 @@ class OthelloExpertBot(pyspiel.Bot):
                     f"Failed to parse valid action after {self._max_parsing_retries + 1} retries. "
                     f"Last response: '{response}'. Error: {result['error_message']}"
                 )
-        
+
         raise RuntimeError("Should not reach here")
 
 

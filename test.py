@@ -45,11 +45,11 @@ task_seed = set()
 #     task_id, seed = item['task_id'], item['seed']
 #     task_seed.add((task_id, seed))
 
-succ, total = 0, 10
+succ, cnt = 0, 0
 
 # for item in analyze_data()['goofspiel']:
 # for item in task_seed:
-for i in range(total):
+for i in range(1):
     # task_id, seed = item['task_id'], item['seed']
     task_type = 4
     task_id = random.randint(task_type * 100000000, (task_type + 1) * 100000000)
@@ -60,15 +60,17 @@ for i in range(total):
         task_id=task_id,
         seed=seed,
         api_key="fdkfjsadfjdaf",
-        model="testing_model",
-        base_url="http://64.247.196.85:20000/v1",
-        verbose=True,
+        model="ATL-Machine/affine-goof-othello-test",
+        base_url="http://66.153.184.201:3033/v1",
+        verbose=cnt % 10 == 0,
     ))
 
     print(f"{result['task_name'].split(":")[1]}:{task_id}:{result['score']}", flush=True)
     succ += result['score']
-    # total += 1
-    # if total == 1:
-    print(result, flush=True)
+    cnt += 1
+    if cnt % 10 == 0:
+        print(f"{succ}/{cnt} = {succ/cnt*100}%", flush=True)
+    if cnt < 10:
+        print(result, flush=True)
 
-print(f"{succ}/{total} = {succ/total*100}%", flush=True)
+print(f"{succ}/{cnt} = {succ/cnt*100}%", flush=True)

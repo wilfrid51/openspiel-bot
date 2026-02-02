@@ -15,6 +15,7 @@ import pyspiel
 from llm_bot import LLMBot
 from expert_bot import OthelloExpertBot, GoofSpielExpertBot, HexExpertBot
 from manual_bot import LiarsDiceManualBot, HexManualBot
+from test_bot import OthelloTestBot
 from game_config import create_game
 from agents import GAME_AGENTS
 
@@ -259,7 +260,7 @@ class Actor:
             agent = agent_class()
 
             if game_name == "othello":
-                llm_bot = OthelloExpertBot(
+                llm_bot = OthelloTestBot(
                     game=game,
                     player_id=llm_player_id,
                     agent=agent,
@@ -267,14 +268,22 @@ class Actor:
                     executor=self.executor,
                     verbose=verbose,
                 )
-            elif game_name == "goofspiel":
-                llm_bot = GoofSpielExpertBot(
-                    game=game,
-                    player_id=llm_player_id,
-                    agent=agent,
-                    seed=seed,
-                    executor=self.executor,
-                )
+                # llm_bot = OthelloExpertBot(
+                #     game=game,
+                #     player_id=llm_player_id,
+                #     agent=agent,
+                #     seed=seed,
+                #     executor=self.executor,
+                #     verbose=verbose,
+                # )
+            # elif game_name == "goofspiel":
+            #     llm_bot = GoofSpielExpertBot(
+            #         game=game,
+            #         player_id=llm_player_id,
+            #         agent=agent,
+            #         seed=seed,
+            #         executor=self.executor,
+            #     )
             # elif game_name == "liars_dice":
             #     llm_bot = LiarsDiceManualBot(
             #         game=game,
